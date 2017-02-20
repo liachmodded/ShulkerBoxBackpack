@@ -1,0 +1,27 @@
+plugins {
+    id 'checkstyle'
+    id 'org.spongepowered.plugin' version '0.8.1'
+}
+
+repositories {
+    maven {url = "https://repo.spongepowered.org/maven"}
+}
+
+group = pluginGroup
+version = pluginVersion
+
+dependencies {
+    compile 'org.spongepowered:spongeapi:6.0.0-20170219.222907-43'
+}
+
+sponge.plugin.id = pluginId
+
+checkstyle {
+    toolVersion = '7.5.1'
+    configFile = project.file('checkstyle.xml')
+    configProperties = [
+            'basedir'     : project.projectDir,
+            'suppressions': project.file('checkstyle-suppressions.xml'),
+            'severity'    : 'warning'
+    ]
+}
