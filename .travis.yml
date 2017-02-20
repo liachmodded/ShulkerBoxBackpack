@@ -6,7 +6,7 @@ jdk:
   - openjdk8
   - oraclejdk8
 
-install: true
+install: chmod +x gradlew
 script: ./gradlew build
 
 notifications:
