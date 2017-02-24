@@ -1,6 +1,7 @@
 plugins {
     id 'checkstyle'
     id 'org.spongepowered.plugin' version '0.8.1'
+    id 'net.minecrell.licenser' version '0.3'
 }
 
 repositories {
@@ -11,7 +12,7 @@ group = pluginGroup
 version = pluginVersion
 
 dependencies {
-    compile 'org.spongepowered:spongeapi:6.0.0-20170219.222907-43'
+    compile 'org.spongepowered:spongeapi:6.0.0-SNAPSHOT'
 }
 
 sponge.plugin.id = pluginId
@@ -24,4 +25,11 @@ checkstyle {
             'suppressions': project.file('checkstyle-suppressions.xml'),
             'severity'    : 'warning'
     ]
+}
+
+license {
+    header rootProject.file('LICENSE')
+    include '**/*.java'
+
+    style.java = 'BLOCK_COMMENT'
 }

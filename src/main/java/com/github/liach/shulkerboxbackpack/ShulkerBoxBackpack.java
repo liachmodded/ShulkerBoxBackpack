@@ -1,3 +1,28 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) liachmodded <https://github.com/liachmodded>
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
 package com.github.liach.shulkerboxbackpack;
 
 import static org.spongepowered.api.item.ItemTypes.BLACK_SHULKER_BOX;
@@ -27,7 +52,6 @@ import org.spongepowered.api.data.manipulator.mutable.item.InventoryItemData;
 import org.spongepowered.api.data.type.HandType;
 import org.spongepowered.api.entity.living.Humanoid;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.EventManager;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.filter.Getter;
@@ -46,33 +70,32 @@ import java.util.Set;
  * Main class for Shulker Box Backpack plugin.
  */
 @Plugin(
-        id = "shulkerboxbackpack",
-        name = "Shulker Box Backpack",
-        description = "Allow users to use shulker boxes as backpacks",
-        url = "https://github.com/liachmodded/ShulkerBoxBackpack",
-        authors = {
-                "liach"
-        }
+    id = "shulkerboxbackpack",
+    name = "Shulker Box Backpack",
+    description = "Allow users to use shulker boxes as backpacks",
+    url = "https://github.com/liachmodded/ShulkerBoxBackpack",
+    authors = {
+        "liach"
+    }
 )
 public final class ShulkerBoxBackpack {
 
     private static ShulkerBoxBackpack instance;
 
     @Inject
+    @SuppressWarnings("unused")
     private Logger logger;
-    @Inject
-    private EventManager eventManager;
 
-    private Set<ItemType> boxes =
-            Sets.newHashSet(BLACK_SHULKER_BOX, BLUE_SHULKER_BOX,
-                    BROWN_SHULKER_BOX, BROWN_SHULKER_BOX,
-                    CYAN_SHULKER_BOX, GRAY_SHULKER_BOX, GREEN_SHULKER_BOX,
-                    LIGHT_BLUE_SHULKER_BOX, LIME_SHULKER_BOX,
-                    MAGENTA_SHULKER_BOX,
-                    ORANGE_SHULKER_BOX, PINK_SHULKER_BOX, PURPLE_SHULKER_BOX,
-                    RED_SHULKER_BOX, SILVER_SHULKER_BOX, RED_SHULKER_BOX,
-                    WHITE_SHULKER_BOX,
-                    YELLOW_SHULKER_BOX);
+    private final Set<ItemType> boxes =
+        Sets.newHashSet(BLACK_SHULKER_BOX, BLUE_SHULKER_BOX,
+            BROWN_SHULKER_BOX, BROWN_SHULKER_BOX,
+            CYAN_SHULKER_BOX, GRAY_SHULKER_BOX, GREEN_SHULKER_BOX,
+            LIGHT_BLUE_SHULKER_BOX, LIME_SHULKER_BOX,
+            MAGENTA_SHULKER_BOX,
+            ORANGE_SHULKER_BOX, PINK_SHULKER_BOX, PURPLE_SHULKER_BOX,
+            RED_SHULKER_BOX, SILVER_SHULKER_BOX, RED_SHULKER_BOX,
+            WHITE_SHULKER_BOX,
+            YELLOW_SHULKER_BOX);
 
     /**
      * Constructor.
@@ -101,12 +124,9 @@ public final class ShulkerBoxBackpack {
      */
     @Listener
     public void onPlaceShulkerBox(InteractItemEvent.Secondary event, @First
-            Humanoid humanoid, @First HandType handInUse, @Getter("getItemStack") ItemStackSnapshot
-            view) {
-        if (event.isCancelled()) {
-            return;
-        }
-        if (!boxes.contains(view.getType())) {
+        Humanoid humanoid, @First HandType handInUse, @Getter("getItemStack") ItemStackSnapshot
+        view) {
+        if (!this.boxes.contains(view.getType())) {
             return;
         }
         if (humanoid.get(Keys.IS_SNEAKING).orElse(true)) {
@@ -115,20 +135,20 @@ public final class ShulkerBoxBackpack {
         if (humanoid instanceof Player) {
             Player player = (Player) humanoid;
             InventoryItemData data = view.get(ImmutableInventoryItemData.class)
-                    .orElseThrow(() -> new RuntimeException("Unexpected that a shulker box has no inventory item")).asMutable();
+                .orElseThrow(() -> new RuntimeException("Unexpected that a shulker box has no inventory item")).asMutable();
 
             // Create inventory to view
             Inventory inv = Inventory.builder()
-                    .of(InventoryArchetypes.CHEST)
-                    .forCarrier(data)
-                    .build(getInstance());
+                .of(InventoryArchetypes.CHEST)
+                .forCarrier(data)
+                .build(getInstance());
             player.openInventory(inv, Cause.source(getInstance()).build());
 
             // After modification
             ItemStack stack = view.createStack();
             DataTransactionResult result = stack.offer(data);
             if (!result.isSuccessful()) {
-                logger.error("Cannot set the updated inventory content");
+                this.logger.error("Cannot set the updated inventory content");
             }
             player.setItemInHand(handInUse, stack);
         }
